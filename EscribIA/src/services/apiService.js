@@ -12,4 +12,3 @@ export const procesarTexto = async (texto) => {
   }
 };
 
-// Puedes agregar más funciones de servicio aquí si la API se expande en el futuro

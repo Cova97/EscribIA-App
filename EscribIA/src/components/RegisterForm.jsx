@@ -1,110 +1,128 @@
-// src/components/RegisterForm.jsx
-import { useState } from "react";
-import { Box, Button,FormControl,FormLabel,Input,InputGroup,InputRightElement,Stack,Text,Alert,AlertIcon,useToast } from "@chakra-ui/react";
-import { registerUser } from "../services/authService"; // Servicio de registro desde authService.js
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Heading,
+  Text,
+  Link,
+  useToast,
+  FormErrorMessage,
+} from '@chakra-ui/react';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
-export default function RegisterForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+const RegisterForm = () => {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const toast = useToast();
+  const auth = getAuth();
 
-  const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-    return passwordRegex.test(password);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!fullName.trim()) newErrors.fullName = "El nombre completo es requerido";
+    if (!email.trim()) newErrors.email = "El correo electrónico es requerido";
+    if (!password) newErrors.password = "La contraseña es requerida";
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    if (!validatePassword(password)) {
-      setError(
-        "La contraseña debe tener al menos 8 caracteres, un número, una letra mayúscula y un carácter especial."
-      );
-      return;
-    }
-
+    setIsLoading(true);
     try {
-      const user = await registerUser(email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: fullName
+      });
       toast({
-        title: "Usuario registrado.",
-        description: "Registro exitoso.",
+        title: "Registro exitoso",
+        description: "Tu cuenta ha sido creada correctamente",
         status: "success",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
     } catch (error) {
-      setError("Error al registrar: " + error.message);
+      toast({
+        title: "Error en el registro",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={10} p={5} boxShadow="lg" borderRadius="md">
-      <Text fontSize="2xl" mb={4} textAlign="center">
-        Registro de Usuario
-      </Text>
-      {error && (
-        <Alert status="error" mb={4}>
-          <AlertIcon />
-          {error}
-        </Alert>
-      )}
-      <Stack spacing={4}>
-        <FormControl id="email" isRequired>
-          <FormLabel>Correo electrónico</FormLabel>
-          <Input
-            type="email"
-            placeholder="Ingresa tu correo"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </FormControl>
-
-        <FormControl id="password" isRequired>
-          <FormLabel>Contraseña</FormLabel>
-          <InputGroup>
+    <Box maxWidth="400px" margin="auto" mt={8}>
+      <form onSubmit={handleSubmit}>
+        <VStack spacing={4} align="stretch">
+          <Heading textAlign="center">Registro</Heading>
+          
+          <FormControl isInvalid={errors.fullName}>
+            <FormLabel>Nombre completo</FormLabel>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Ingresa tu contraseña"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            <FormErrorMessage>{errors.fullName}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={errors.email}>
+            <FormLabel>Correo electrónico</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <FormErrorMessage>{errors.email}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={errors.password}>
+            <FormLabel>Contraseña</FormLabel>
+            <Input
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <InputRightElement width="4.5rem">
-              <Button
-                h="1.75rem"
-                size="sm"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? "Ocultar" : "Mostrar"}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
+            <FormErrorMessage>{errors.password}</FormErrorMessage>
+          </FormControl>
 
-        <FormControl id="confirmPassword" isRequired>
-          <FormLabel>Confirmar Contraseña</FormLabel>
-          <InputGroup>
+          <FormControl isInvalid={errors.confirmPassword}>
+            <FormLabel>Confirmar contraseña</FormLabel>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirma tu contraseña"
+              type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-          </InputGroup>
-        </FormControl>
+            <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
+          </FormControl>
 
-        <Button colorScheme="teal" onClick={handleRegister}>
-          Registrarse
-        </Button>
-      </Stack>
+          <Button
+            colorScheme="blue"
+            type="submit"
+            isLoading={isLoading}
+          >
+            Registrarse
+          </Button>
+        </VStack>
+      </form>
     </Box>
   );
-}
+};
+
+export default RegisterForm;
