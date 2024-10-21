@@ -44,18 +44,7 @@ const Home = ({ correoUsuario }) => {
             </HStack>
           </Flex>
 
-          <Box bg={cardBgColor} p={6} borderRadius="md" boxShadow="md">
-            <Heading as="h2" size="lg" mb={4}>
-              ¿Qué te gustaría hacer hoy?
-            </Heading>
-            <HStack spacing={4}>
-              <Button colorScheme="blue">Crear nuevo documento</Button>
-              <Button colorScheme="green">Ver mis documentos</Button>
-              <Button colorScheme="purple">Explorar plantillas</Button>
-            </HStack>
-          </Box>
-
-          <Box>
+         <Box>
             <Heading as="h2" size="lg" mb={4}>
                 Procesador de Texto
             </Heading>
@@ -64,16 +53,7 @@ const Home = ({ correoUsuario }) => {
             </HStack>
           </Box>
 
-          <Box bg={cardBgColor} p={6} borderRadius="md" boxShadow="md">
-            <Heading as="h2" size="lg" mb={4}>
-              Actividad reciente
-            </Heading>
-            <VStack align="stretch" spacing={3}>
-              <Text>• Documento 1 - Editado hace 2 horas</Text>
-              <Text>• Documento 2 - Creado ayer</Text>
-              <Text>• Documento 3 - Compartido hace 3 días</Text>
-            </VStack>
-          </Box>
+          
         </VStack>
       </Container>
     </Box>

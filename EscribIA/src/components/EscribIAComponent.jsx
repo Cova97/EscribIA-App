@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
 import { procesarTexto } from '../services/apiService';
+import {
+  Box,
+  Button,
+  Input,
+  Textarea,
+  Spinner,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  Alert,
+  AlertIcon,
+} from '@chakra-ui/react';
 
 const EscribIAComponent = () => {
   const [inputText, setInputText] = useState('');
@@ -25,42 +38,69 @@ const EscribIAComponent = () => {
     }
   };
 
+  // Función para determinar el color basado en la calificación
+  const getScoreColor = (score) => {
+    if (score >= 7) {
+      return 'green.500';
+    } else if (score >= 4) {
+      return 'yellow.500';
+    } else {
+      return 'red.500';
+    }
+  };
+
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
-      <h1 className="text-2xl font-bold mb-4">EscribIA Procesador de Texto</h1>
+    <Box maxW="lg" mx="auto" mt={10} p={6} bg="white" rounded="lg" shadow="xl">
+      <Heading as="h1" size="xl" mb={4} textAlign="center" color="teal.500">
+        EscribIA Procesador de Texto
+      </Heading>
+
+      {error && (
+        <Alert status="error" mb={4}>
+          <AlertIcon />
+          {error}
+        </Alert>
+      )}
+
       <form onSubmit={handleSubmit}>
-        <textarea
-          className="w-full p-2 border rounded mb-4"
-          rows="5"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Ingresa tu texto aquí..."
-        />
-        <button
+        <FormControl mb={4}>
+          <FormLabel htmlFor="inputText">Ingresa tu texto</FormLabel>
+          <Textarea
+            id="inputText"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Escribe aquí tu texto para procesar"
+            size="md"
+            focusBorderColor="teal.500"
+          />
+        </FormControl>
+
+        <Button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
-          disabled={isLoading || !inputText.trim()}
+          colorScheme="teal"
+          size="lg"
+          width="full"
+          isLoading={isLoading}
+          loadingText="Procesando"
+          spinner={<Spinner />}
         >
-          {isLoading ? 'Procesando...' : 'Procesar Texto'}
-        </button>
+          Procesar Texto
+        </Button>
       </form>
 
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-
       {correctedText && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Texto Corregido:</h2>
-          <p className="bg-gray-100 p-3 rounded">{correctedText}</p>
-        </div>
-      )}
+        <Box mt={6} p={4} bg="gray.50" borderRadius="md" shadow="md">
+          <Text fontSize="lg" fontWeight="bold" mb={2}>
+            Texto Corregido:
+          </Text>
+          <Text>{correctedText}</Text>
 
-      {score !== null && (
-        <div className="mt-4">
-          <h2 className="text-xl font-semibold mb-2">Puntuación:</h2>
-          <p className="text-2xl font-bold">{score}</p>
-        </div>
+          <Text fontSize="lg" fontWeight="bold" mt={4} color={getScoreColor(score)}>
+            Calificación: {score}/10
+          </Text>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

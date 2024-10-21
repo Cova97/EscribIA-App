@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChakraProvider, Box, VStack } from '@chakra-ui/react';
+import { ChakraProvider, Box, VStack, Button } from '@chakra-ui/react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import appAuth from "../src/services/authService";
 
@@ -7,9 +7,6 @@ import appAuth from "../src/services/authService";
 import Home from './components/Home';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
-
-// Importación de estilos
-import './App.css';
 
 const auth = getAuth(appAuth);
 
@@ -28,7 +25,6 @@ function App() {
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
@@ -37,29 +33,42 @@ function App() {
   };
 
   if (loading) {
-    // You could return a loading spinner or skeleton here
     return <div>Loading...</div>;
   }
 
   return (
     <ChakraProvider>
-      <Box className="App">
+      <Box
+        className="App bg-gradient-to-r from-teal-500 to-green-500 flex justify-center items-center min-h-screen"
+        px={{ base: '4', md: '8' }}  // Chakra responsive padding
+      >
         {user ? (
           <Home correoUsuario={user.email} />
         ) : (
-          <VStack spacing={4}>
+          <VStack
+            spacing={4}
+            maxW={{ base: '90%', md: '50%', lg: '30%' }}  // Chakra responsive width
+            w="full"
+            p={6}
+            bg="white"
+            borderRadius="md"
+            boxShadow="lg"
+            className="shadow-2xl rounded-lg"
+          >
             {showRegister ? (
               <RegisterForm />
             ) : (
               <LoginForm />
             )}
-            <Box
-              as="button"
-              color="blue.500"
+            <Button
+              colorScheme="blue"
+              variant="outline"
               onClick={toggleForm}
+              w="full"
+              className="hover:bg-blue-500 hover:text-white transition duration-300 ease-in-out"
             >
               {showRegister ? "¿Ya tienes una cuenta? Inicia sesión" : "¿No tienes una cuenta? Regístrate"}
-            </Box>
+            </Button>
           </VStack>
         )}
       </Box>

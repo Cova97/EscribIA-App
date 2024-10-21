@@ -46,16 +46,28 @@ const LoginForm = () => {
   };
 
   return (
-    <Box maxWidth="400px" margin="auto" mt={8}>
+    <Box 
+      maxWidth="400px" 
+      margin="auto" 
+      mt={8}
+      className="bg-white p-6 shadow-lg rounded-lg"
+      boxShadow="2xl"
+      borderRadius="lg"
+      padding={6}
+    >
       <form onSubmit={handleSubmit}>
         <VStack spacing={4} align="stretch">
-          <Heading textAlign="center">Iniciar Sesión</Heading>
+          <Heading textAlign="center" color="blue.500" className="text-2xl font-bold">
+            Iniciar Sesión
+          </Heading>
           <FormControl id="email" isRequired>
             <FormLabel>Correo electrónico</FormLabel>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
           </FormControl>
           <FormControl id="password" isRequired>
@@ -64,12 +76,16 @@ const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
           </FormControl>
           <Button
             colorScheme="blue"
             type="submit"
             isLoading={isLoading}
+            w="full"
+            className="hover:bg-blue-600 transition ease-in-out duration-300"
           >
             Iniciar Sesión
           </Button>

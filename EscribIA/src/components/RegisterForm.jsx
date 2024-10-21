@@ -7,8 +7,6 @@ import {
   Input,
   VStack,
   Heading,
-  Text,
-  Link,
   useToast,
   FormErrorMessage,
 } from '@chakra-ui/react';
@@ -67,10 +65,20 @@ const RegisterForm = () => {
   };
 
   return (
-    <Box maxWidth="400px" margin="auto" mt={8}>
+    <Box 
+      maxWidth="400px" 
+      margin="auto" 
+      mt={8}
+      className="bg-white p-6 shadow-lg rounded-lg"
+      boxShadow="2xl"
+      borderRadius="lg"
+      padding={6}
+    >
       <form onSubmit={handleSubmit}>
         <VStack spacing={4} align="stretch">
-          <Heading textAlign="center">Registro</Heading>
+          <Heading textAlign="center" color="blue.500" className="text-2xl font-bold">
+            Registro
+          </Heading>
           
           <FormControl isInvalid={errors.fullName}>
             <FormLabel>Nombre completo</FormLabel>
@@ -78,6 +86,8 @@ const RegisterForm = () => {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
             <FormErrorMessage>{errors.fullName}</FormErrorMessage>
           </FormControl>
@@ -88,6 +98,8 @@ const RegisterForm = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
             <FormErrorMessage>{errors.email}</FormErrorMessage>
           </FormControl>
@@ -98,6 +110,8 @@ const RegisterForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
             <FormErrorMessage>{errors.password}</FormErrorMessage>
           </FormControl>
@@ -108,6 +122,8 @@ const RegisterForm = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="focus:ring-2 focus:ring-blue-500"
+              padding={4}
             />
             <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
           </FormControl>
@@ -116,6 +132,8 @@ const RegisterForm = () => {
             colorScheme="blue"
             type="submit"
             isLoading={isLoading}
+            w="full"
+            className="hover:bg-blue-600 transition ease-in-out duration-300"
           >
             Registrarse
           </Button>
