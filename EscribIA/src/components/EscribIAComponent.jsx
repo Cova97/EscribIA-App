@@ -12,6 +12,8 @@ import {
   FormLabel,
   Alert,
   AlertIcon,
+  VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 const EscribIAComponent = () => {
@@ -49,57 +51,69 @@ const EscribIAComponent = () => {
     }
   };
 
+  const bgColor = useColorModeValue('white', 'gray.700');
+  const cardBgColor = useColorModeValue('gray.50', 'gray.800');
+  const textColor = useColorModeValue('gray.700', 'gray.200');
+  const buttonColor = useColorModeValue('teal.600', 'teal.400');
+
   return (
-    <Box maxW="lg" mx="auto" mt={10} p={6} bg="white" rounded="lg" shadow="xl">
-      <Heading as="h1" size="xl" mb={4} textAlign="center" color="teal.500">
-        EscribIA Procesador de Texto
-      </Heading>
+    <Box maxW="lg" mx="auto" mt={10} p={6} bg={bgColor} borderRadius="lg" boxShadow="xl" className="w-full">
+      <VStack spacing={6} align="stretch">
+        <Heading as="h1" size="xl" textAlign="center" color={buttonColor} className="font-bold">
+          EscribIA Procesador de Texto
+        </Heading>
 
-      {error && (
-        <Alert status="error" mb={4}>
-          <AlertIcon />
-          {error}
-        </Alert>
-      )}
+        {error && (
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <FormControl mb={4}>
-          <FormLabel htmlFor="inputText">Ingresa tu texto</FormLabel>
-          <Textarea
-            id="inputText"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Escribe aquí tu texto para procesar"
-            size="md"
-            focusBorderColor="teal.500"
-          />
-        </FormControl>
+        <form onSubmit={handleSubmit}>
+          <FormControl mb={4}>
+            <FormLabel htmlFor="inputText" color={textColor} fontWeight="bold">
+              Ingresa tu texto
+            </FormLabel>
+            <Textarea
+              id="inputText"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Escribe aquí tu texto para procesar"
+              size="md"
+              focusBorderColor={buttonColor}
+              bg={cardBgColor}
+              color={textColor}
+            />
+          </FormControl>
 
-        <Button
-          type="submit"
-          colorScheme="teal"
-          size="lg"
-          width="full"
-          isLoading={isLoading}
-          loadingText="Procesando"
-          spinner={<Spinner />}
-        >
-          Procesar Texto
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            colorScheme="teal"
+            size="lg"
+            width="full"
+            isLoading={isLoading}
+            loadingText="Procesando"
+            spinner={<Spinner />}
+            className="mt-4"
+          >
+            Procesar Texto
+          </Button>
+        </form>
 
-      {correctedText && (
-        <Box mt={6} p={4} bg="gray.50" borderRadius="md" shadow="md">
-          <Text fontSize="lg" fontWeight="bold" mb={2}>
-            Texto Corregido:
-          </Text>
-          <Text>{correctedText}</Text>
+        {correctedText && (
+          <Box mt={6} p={4} bg={cardBgColor} borderRadius="md" boxShadow="md">
+            <Text fontSize="lg" fontWeight="bold" mb={2} color={textColor}>
+              Texto Corregido:
+            </Text>
+            <Text color={textColor}>{correctedText}</Text>
 
-          <Text fontSize="lg" fontWeight="bold" mt={4} color={getScoreColor(score)}>
-            Calificación: {score}/10
-          </Text>
-        </Box>
-      )}
+            <Text fontSize="lg" fontWeight="bold" mt={4} color={getScoreColor(score)}>
+              Calificación: {score}/10
+            </Text>
+          </Box>
+        )}
+      </VStack>
     </Box>
   );
 };

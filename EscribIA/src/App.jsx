@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { ChakraProvider, Box, VStack, Button } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  Box,
+  VStack,
+  Button,
+  HStack,
+  Text,
+  Link,
+  useColorModeValue,
+  Spinner,
+  Container,
+  Heading,
+} from '@chakra-ui/react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import appAuth from "../src/services/authService";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import 'tailwindcss/tailwind.css';
 
 // Importación de los componentes
 import Home from './components/Home';
@@ -13,12 +27,13 @@ const auth = getAuth(appAuth);
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showRegister, setShowRegister] = useState(false);
+  const navigate = useNavigate(); // Hook de navegación
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
       if (userFirebase) {
         setUser(userFirebase);
+        navigate('/'); // Navegar al Home si el usuario está autenticado
       } else {
         setUser(null);
       }
@@ -26,54 +41,69 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, []);
-
-  const toggleForm = () => {
-    setShowRegister(!showRegister);
-  };
+  }, [navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box className="flex items-center justify-center min-h-screen bg-gray-100">
+        <Spinner size="xl" color="teal.500" />
+      </Box>
+    );
   }
+
+  const bgColor = useColorModeValue("gray.100", "gray.900");
+  const headerBgColor = useColorModeValue("white", "gray.800");
+  const textColor = useColorModeValue("gray.700", "gray.200");
+  const buttonColor = useColorModeValue("teal.600", "teal.400");
 
   return (
     <ChakraProvider>
-      <Box
-        className="App bg-gradient-to-r from-teal-500 to-green-500 flex justify-center items-center min-h-screen"
-        px={{ base: '4', md: '8' }}  // Chakra responsive padding
-      >
-        {user ? (
-          <Home correoUsuario={user.email} />
-        ) : (
-          <VStack
-            spacing={4}
-            maxW={{ base: '90%', md: '50%', lg: '30%' }}  // Chakra responsive width
-            w="full"
-            p={6}
-            bg="white"
-            borderRadius="md"
-            boxShadow="lg"
-            className="shadow-2xl rounded-lg"
-          >
-            {showRegister ? (
-              <RegisterForm />
-            ) : (
-              <LoginForm />
-            )}
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              onClick={toggleForm}
-              w="full"
-              className="hover:bg-blue-500 hover:text-white transition duration-300 ease-in-out"
+      <Box className="min-h-screen" bg={bgColor} px={4} py={8}>
+        <Container maxW="container.xl">
+          {!user && (
+            <Box
+              bg={headerBgColor}
+              py={6}
+              px={10}
+              borderRadius="lg"
+              boxShadow="lg"
+              mb={10}
             >
-              {showRegister ? "¿Ya tienes una cuenta? Inicia sesión" : "¿No tienes una cuenta? Regístrate"}
-            </Button>
-          </VStack>
-        )}
+              <HStack justifyContent="space-between" alignItems="center">
+                <Heading size="lg" color={textColor} fontWeight="bold">
+                  Mi Aplicación
+                </Heading>
+                <HStack spacing={6}>
+                  <Link onClick={() => navigate('/')} fontWeight="bold" color={textColor} _hover={{ color: buttonColor }}>
+                    Inicio
+                  </Link>
+                  <Button variant="outline" colorScheme="teal" borderWidth={2} onClick={() => navigate('/login')} boxShadow="md" _hover={{ boxShadow: "lg" }}>
+                    Sign in
+                  </Button>
+                  <Button colorScheme="teal" variant="solid" borderRadius="full" onClick={() => navigate('/register')} boxShadow="md" _hover={{ boxShadow: "lg" }}>
+                    Open an Account
+                  </Button>
+                </HStack>
+              </HStack>
+            </Box>
+          )}
+
+          <Routes>
+            <Route path="/" element={user ? <Home correoUsuario={user.email} /> : <Text textAlign="center" color={textColor}>Por favor, inicie sesión</Text>} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
+          </Routes>
+        </Container>
       </Box>
     </ChakraProvider>
   );
 }
 
-export default App;
+// Envuelve `App` en `Router` aquí directamente
+export default function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
